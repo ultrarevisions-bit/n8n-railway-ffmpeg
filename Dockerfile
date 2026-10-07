@@ -12,21 +12,40 @@ FROM n8nio/n8n:2.19.2
 
 USER root
 
-# Copy FFmpeg binaries and libraries
+# --------------------------------------------------
+# FFmpeg
+# --------------------------------------------------
+
 COPY --from=ffmpeg /out/bin/ /opt/ffmpeg/bin/
 COPY --from=ffmpeg /out/lib/ /opt/ffmpeg/lib/
 
-# Create safe wrappers so FFmpeg uses its own libraries
-RUN printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffmpeg "$@"\n' > /usr/local/bin/ffmpeg \
+RUN printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffmpeg "$@"\n' \
+    > /usr/local/bin/ffmpeg \
     && chmod +x /usr/local/bin/ffmpeg \
-    && printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffprobe "$@"\n' > /usr/local/bin/ffprobe \
+    && printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffprobe "$@"\n' \
+    > /usr/local/bin/ffprobe \
     && chmod +x /usr/local/bin/ffprobe
 
-USER root
+# --------------------------------------------------
+# Python + Edge TTS
+# --------------------------------------------------
+
 RUN apk add --no-cache python3 py3-pip \
     && python3 -m venv /opt/edge-tts \
     && /opt/edge-tts/bin/pip install --no-cache-dir edge-tts \
-    && ln -sf /opt/edge-tts/bin/edge-tts /usr/local/bin/edge-tts
+    && ln -sf /opt/edge-tts/bin/edge-tts /usr/local/bin/edge-tts \
+    && echo "===== VERIFY PYTHON =====" \
+    && python3 --version \
+    && echo "===== VERIFY EDGE TTS =====" \
+    && /usr/local/bin/edge-tts --version \
+    && echo "===== VERIFY FFMPEG =====" \
+    && /usr/local/bin/ffmpeg -version | head -1 \
+    && echo "===== VERIFY FFPROBE =====" \
+    && /usr/local/bin/ffprobe -version | head -1
+
+# --------------------------------------------------
+# n8n
+# --------------------------------------------------
 
 ENV N8N_PORT=5678
 ENV NODE_ENV=production
