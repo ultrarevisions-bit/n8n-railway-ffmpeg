@@ -22,6 +22,12 @@ RUN printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffmp
     && printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffprobe "$@"\n' > /usr/local/bin/ffprobe \
     && chmod +x /usr/local/bin/ffprobe
 
+USER root
+RUN apk add --no-cache python3 py3-pip \
+    && python3 -m venv /opt/edge-tts \
+    && /opt/edge-tts/bin/pip install --no-cache-dir edge-tts \
+    && ln -sf /opt/edge-tts/bin/edge-tts /usr/local/bin/edge-tts
+
 ENV N8N_PORT=5678
 ENV NODE_ENV=production
 ENV N8N_DIAGNOSTICS_ENABLED=false
