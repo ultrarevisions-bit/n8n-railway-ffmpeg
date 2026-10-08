@@ -26,30 +26,7 @@ RUN printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffmp
     > /usr/local/bin/ffprobe \
     && chmod +x /usr/local/bin/ffprobe
 
-# --------------------------------------------------
-# Restore apk package manager from Alpine
-# --------------------------------------------------
 
-COPY --from=ffmpeg /sbin/apk /sbin/apk
-COPY --from=ffmpeg /lib/apk /lib/apk
-COPY --from=ffmpeg /usr/lib/libapk* /usr/lib/
-
-# --------------------------------------------------
-# Python + Edge TTS
-# --------------------------------------------------
-
-RUN apk add --no-cache python3 py3-pip \
-    && python3 -m venv /opt/edge-tts \
-    && /opt/edge-tts/bin/pip install --no-cache-dir edge-tts \
-    && ln -sf /opt/edge-tts/bin/edge-tts /usr/local/bin/edge-tts \
-    && echo "===== VERIFY PYTHON =====" \
-    && python3 --version \
-    && echo "===== VERIFY EDGE TTS =====" \
-    && /usr/local/bin/edge-tts --version \
-    && echo "===== VERIFY FFMPEG =====" \
-    && /usr/local/bin/ffmpeg -version | head -1 \
-    && echo "===== VERIFY FFPROBE =====" \
-    && /usr/local/bin/ffprobe -version | head -1
 
 # --------------------------------------------------
 # n8n
