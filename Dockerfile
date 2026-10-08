@@ -26,14 +26,18 @@ RUN printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffmp
     > /usr/local/bin/ffprobe \
     && chmod +x /usr/local/bin/ffprobe
 
-    
+
 # --------------------------------------------------
 # Node-based Edge TTS
 # --------------------------------------------------
 
-RUN npm install --global --omit=dev node-edge-tts@1.2.10 \
-    && echo "===== VERIFY NODE EDGE TTS =====" \
-    && node-edge-tts --version
+RUN mkdir -p /opt/edge-tts-node \
+    && cd /opt/edge-tts-node \
+    && npm init -y \
+    && npm install --omit=dev node-edge-tts@1.2.10 \
+    && node -e "console.log(require.resolve('node-edge-tts', { paths: ['/opt/edge-tts-node'] }))"
+
+ENV NODE_PATH=/opt/edge-tts-node/node_modules
 
 
 
