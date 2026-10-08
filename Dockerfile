@@ -26,6 +26,15 @@ RUN printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffmp
     > /usr/local/bin/ffprobe \
     && chmod +x /usr/local/bin/ffprobe
 
+    
+# --------------------------------------------------
+# Node-based Edge TTS
+# --------------------------------------------------
+
+RUN npm install --global --omit=dev node-edge-tts@1.2.10 \
+    && echo "===== VERIFY NODE EDGE TTS =====" \
+    && node-edge-tts --version
+
 
 
 # --------------------------------------------------
