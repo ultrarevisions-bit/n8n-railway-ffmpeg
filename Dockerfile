@@ -27,6 +27,14 @@ RUN printf '#!/bin/sh\nLD_LIBRARY_PATH=/opt/ffmpeg/lib exec /opt/ffmpeg/bin/ffmp
     && chmod +x /usr/local/bin/ffprobe
 
 # --------------------------------------------------
+# Restore apk package manager from Alpine
+# --------------------------------------------------
+
+COPY --from=ffmpeg /sbin/apk /sbin/apk
+COPY --from=ffmpeg /lib/apk /lib/apk
+COPY --from=ffmpeg /usr/lib/libapk* /usr/lib/
+
+# --------------------------------------------------
 # Python + Edge TTS
 # --------------------------------------------------
 
